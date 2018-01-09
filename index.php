@@ -39,7 +39,7 @@ $showSignup = "style='display:none;'";
 						<input type="password" name="inputPassword" class="form-control" placeholder="Password" required="">
 						
 						<label>
-							<a href="index.php?login=signup"> Sign up </a>
+							<a href="./user"> Sign up </a>
 						</label>
 
 						<button name="login" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>

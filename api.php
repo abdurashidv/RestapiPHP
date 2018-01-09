@@ -1,0 +1,64 @@
+<?php 
+
+header("Content-Type:application/json");
+	
+require "data.php";
+
+$result = '';
+
+if(!empty($_GET['process']))
+{
+	$process=$_GET['process'];
+
+	if($process == 'list'){
+		$userID = $_GET['uid'];
+		$result = getList($userID);
+	} else if($process == 'edit'){
+		$name = $_GET['name'];
+		$recipe = $_GET['recipe'];
+		$catalogID = $_GET['id'];
+
+		$result = editRecipe($name, $recipe, $catalogID);
+	} else if($process == 'recipe'){
+		$id = $_GET['id'];
+
+		$result = getRecipe($id);
+	} else if($process == 'create'){
+		$name = 'Shurbo';
+		$recipe = 'devonahsay';
+		$userID = 1;
+
+		$result = createRecipe($name, $recipe, $userID);
+		// $result = 'Success';
+	} else if($process == 'delete'){
+		$id = $_GET['id'];
+
+		$result = deleteRecipe($id);
+	}
+	
+	if(empty($result))
+	{
+		response(200,"Product Not Found",NULL);
+	}
+	else
+	{
+		response(200,"Product Found",$result);
+	}
+
+}
+else
+{
+	response(400,"Invalid Request",NULL);
+}
+
+function response($status,$status_message,$data)
+{
+	$response['status']			=	$status;
+	$response['status_message']	=	$status_message;
+	$response['data']			=	$data;
+
+	$json_response				=	json_encode($response);
+	echo $json_response;
+}
+
+?>

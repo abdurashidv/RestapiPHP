@@ -1,5 +1,13 @@
 <?php
 
+function rashid($url){
+	$client = curl_init($url);
+   	curl_setopt($client,CURLOPT_RETURNTRANSFER,true);
+   	$response = curl_exec($client);
+
+   	return json_decode($response);
+}
+
 $pButton = "";
 $catalogStyle = "style='display:block;'";
 $processStyle = "style='display:none;'";
@@ -13,6 +21,21 @@ $processStyle = "style='display:none;'";
 			$processStyle = "style='display:block;'";
 
 			//query
+			
+			if(isset($_POST['CREATE'])){
+				echo 'Rashid';
+				$url = "http://localhost/Restful/api/create";
+
+				$client = curl_init($url);
+				curl_setopt($client, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($client);
+
+				$result =  json_decode($response);
+
+				print_r($result);
+				echo $result;
+			}
+
 		} else if($_GET['process'] == 'edit') {
 			//styles
 			$pButton = 'UPDATE';
@@ -21,12 +44,16 @@ $processStyle = "style='display:none;'";
 			$pShow = "style='display:block;'";
 
 			//query
+			$url = "http://localhost/Restful/api/edit";
 		} else if($_GET['process'] == 'delete') {
 			//styles
 			$pShow = "style='display:block;'";
 
 			//query
+			$url = "http://localhost/Restful/api/delete";
 		}
+	} else {
+		$url = "http://localhost/Restful/api/list";
 	}
 ?>
 <!DOCTYPE html>
@@ -44,7 +71,7 @@ $processStyle = "style='display:none;'";
 		<div class="row">
 			<div class="col-md-2 col-sm-2"></div>
 			<div class="col-md-8 col-sm-8">
-				<div class="pull-right"><a href='catalog.php?process=create'>Create New Catalog</a></div>
+				<div class="pull-right"><a href='./create'>Create New Catalog</a></div>
 			</div>
 			<div class="col-md-2 col-sm-2"></div>
 		</div>
@@ -66,7 +93,7 @@ $processStyle = "style='display:none;'";
 							<td>1</td>
 							<td>Qurutob</td>
 							<td>Chaka, Ob, Kabuti</td>
-							<td><a href="catalog.php?process=edit">Edit</a> / <a href="catalog.php?process=delete">Delete</a></td>
+							<td><a href="./edit">Edit</a> / <a href="./delete">Delete</a></td>
 						</tr>
 					</tbody>
 				</table>
@@ -79,7 +106,7 @@ $processStyle = "style='display:none;'";
 	<div <?php echo $processStyle; ?>>
 		<div class="row">
         	<div class="col-md-3 col-sm-3"></div>
-        	<div class="col-md-6 col-sm-6"><b>Edit Catalog</b></div>
+        	<div class="col-md-6 col-sm-6"><b>Catalog</b></div>
         	<div class="col-md-3 col-sm-3"></div>
     	</div>
     	<div class="row">
@@ -94,7 +121,7 @@ $processStyle = "style='display:none;'";
                         	<textarea name="recipe" class="form-control" placeholder="Recipe" cols="30" rows="4"></textarea>
                     	</div>
                     	<div class="col">
-                        	<button name="edit" type="submit" class="btn btn-lg btn-primary btn-block"><?php echo $pButton?></button>
+                        	<button name="<?php echo $pButton?>" type="submit" class="btn btn-lg btn-primary btn-block"><?php echo $pButton?></button>
                     	</div>
                 	</div>
             	</form>

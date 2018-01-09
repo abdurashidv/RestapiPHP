@@ -1,0 +1,17 @@
+Options +FollowSymlinks
+RewriteEngine On    # Turn on the rewriting engine
+
+#user
+RewriteRule ^user index.php?login=signup [NC,L]
+
+#catalog.php -- recipe operation
+RewriteRule ^create catalog.php?process=create [NC,L]
+RewriteRule ^edit catalog.php?process=edit [NC,L]
+RewriteRule ^delete catalog.php?process=delete [NC,L]
+
+#Query
+RewriteRule ^api/list/([0-9]*)$ api.php?process=list&uid=$1 [NC,L]
+RewriteRule ^api/edit/([a-zA-Z0-9-_]*)$/([a-zA-Z0-9-_]*)$/([0-9]*)$ api.php?process=edit&name=$1&recipe=$2&id=$3 [NC,L]
+RewriteRule ^api/recipe/([0-9]*)$ api.php?process=recipe&id=$1 [NC,L]
+RewriteRule ^api/create api.php?process=create [NC,L]
+RewriteRule ^api/delete/([0-9]*)$ api.php?process=delete&id=$1 [NC,L]
