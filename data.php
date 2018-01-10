@@ -1,12 +1,6 @@
 <?php
 
-function connect(){
-	try {
-		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
-	}catch (Exception $e) {
-		die("Error in connection: " . pg_last_error());
-	}
-}
+require "connect.php";
 
 function getList($userid)
 {
@@ -36,7 +30,7 @@ function getRecipe($id)
 	return 'Bad';
 }
 
-function editRecipe($name, $recipe, $catalogID)
+function editRecipe($name, $recipe, $catalogID): boolean
 {
 	connect();
 
@@ -50,7 +44,7 @@ function editRecipe($name, $recipe, $catalogID)
 	return false;
 }
 
-function createRecipe($name, $recipe, $image, $userID)
+function createRecipe($name, $recipe, $image, $userID): boolean
 {
 	connect();
 
@@ -64,7 +58,7 @@ function createRecipe($name, $recipe, $image, $userID)
 	return false;
 }
 
-function deleteRecipe($id)
+function deleteRecipe($id): boolean
 {
 	connect();
 
@@ -89,10 +83,10 @@ function checkUser($login, $password)
 		return $result;
 	}
 
-	return 'fail';
+	return null;
 }
 
-function createUser($firstname, $lastname, $login, $password)
+function createUser($firstname, $lastname, $login, $password): string
 {
 	connect();
 

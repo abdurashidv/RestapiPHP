@@ -16,6 +16,7 @@ $recipe = "";
 $pButton = "";
 $row="";
 $errorMessage = "";
+$uid = '';
 
 //default veriables
 $hostname = "http://$_SERVER[HTTP_HOST]";
@@ -24,18 +25,24 @@ $processStyle = "style='display:none;'";
 
 //USER CHECK
 // If user is logged in continue on this page else send to login page
-$login = $_SESSION['user']['login'];
-$password = $_SESSION['user']['password'];
+if(isset($_SESSION['user'])){
+	$login = $_SESSION['user']['login'];
+	$password = $_SESSION['user']['password'];
 
-$url = $hostname."/CatalogApi/api/login/".$login."/".$password;
-$result = processData($url);
+	$url = $hostname."/CatalogApi/api/login/".$login."/".$password;
+	$result = processData($url);
 
-$data = get_object_vars($result->data[0]);
-$uid = $data['id'];
+	$data = get_object_vars($result->data[0]);
+	$uid = $data['id'];
 
-if($result->data == 'fail'){
+	if($result->data == 'fail'){
+		header("Location: ".$hostname."/CatalogApi/index.php");
+	}
+}
+else{
 	header("Location: ".$hostname."/CatalogApi/index.php");
 }
+
 //END OF USER CHECK
 
 	if(isset($_GET['process'])){
@@ -100,14 +107,17 @@ if($result->data == 'fail'){
 		$url = $hostname."/CatalogApi/api/list/".$uid;
 		$result = processData($url);
 
+		$count = 1;
 		if(sizeof($result->data) > 0 ){
 			foreach($result->data as $data){
       			$row = get_object_vars($data);
-      			$output .= "<tr><td>" . $row['id'] . "</td>";
+      			$output .= "<tr><td>" . $count . "</td>";
       			$output .= 		"<td><img src='./images/". $row['image']."' /></td>";
       			$output .= 		"<td>". $row['name']."</td>";
       			$output .= 		"<td>".$row['recipe']."</td>";
       			$output .= "<td><a href='./edit/" . $row['id'] . "'>Edit</a> / <a href='./delete/" . $row['id'] . "'>Delete</a></td></tr>";
+
+      			$count++;
     		}
 		} else {
 			$output .= "<tr><td>No Data</td><td>No Data</td><td>No Data</td><td></td></tr";
@@ -141,7 +151,7 @@ if($result->data == 'fail'){
 				<table class="table table-striped">
     				<thead>
         				<tr>
-            				<th>Row</th>
+            				<th>Row #</th>
             				<th>Image</th>
             				<th>Name</th>
             				<th>Recipe</th>

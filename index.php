@@ -23,7 +23,7 @@ function processData($url){
 		$url = $hostname."/CatalogApi/api/login/".$login."/".$password;
 		$result = processData($url);
 
-		if($result->data != 'fail'){
+		if($result->data != null){
 			$_SESSION['user'] = array('login'=>$login, 'password'=>$password);
 
 			header("Location: ".$hostname."/CatalogApi/catalog.php");
