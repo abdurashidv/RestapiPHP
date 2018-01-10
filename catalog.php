@@ -15,6 +15,7 @@ $name = "";
 $recipe = "";
 $pButton = "";
 $row="";
+$errorMessage="";
 
 //default veriables
 $hostname = "http://$_SERVER[HTTP_HOST]";
@@ -49,12 +50,18 @@ if($result->data == 'fail'){
 			if(isset($_POST['CREATE'])){
 				$name = str_replace(" ","+",$_POST['name']);
 				$recipe = str_replace(" ","+",$_POST['recipe']);
-				$uid = 1;
+				$image = $_FILES['image']['name'];
 
-				$url = $hostname."/CatalogApi/api/create/".$name."/".$recipe."/".$uid;
-				$result = processData($url);
+ 				$target = "images/" . basename($image);
 
-				header("Location: ".$hostname."/CatalogApi/catalog.php");
+ 				if(move_uploaded_file($_FILES['image']['tmp_name'], $target))
+ 				{
+ 					$url = $hostname."/CatalogApi/api/create/".$name."/".$recipe."/".$image."/".$uid;
+					$result = processData($url);
+					header("Location: ".$hostname."/CatalogApi/catalog.php");
+ 				} else {
+ 					$errorMessage = 'Error! Failed to upload image.';
+ 				}
 			}
 
 		} else if($_GET['process'] == 'edit') { //Edit Recipe
@@ -69,15 +76,20 @@ if($result->data == 'fail'){
 				$name = str_replace(" ","+",$_POST['name']);
 				$recipe = str_replace(" ","+",$_POST['recipe']);
 				$id = $_GET['id'];
+				$image = $_FILES['image']['name'];
 
-				$url = $hostname."/CatalogApi/api/edit/".$name."/".$recipe."/".$id;
-				$result = processData($url);
+				$target = "images/" . basename($image);
 
-				echo $name;
-				echo "<br>";
-				echo $recipe;
+				$processable = strlen($image)>0 ? move_uploaded_file($_FILES['image']['tmp_name'], $target) : TRUE;
 
-				header("Location: ".$hostname."/CatalogApi/catalog.php");
+ 				if($processable == TRUE)
+ 				{
+ 					$url = $hostname."/CatalogApi/api/edit/".$name."/".$recipe."/".$id;
+					$result = processData($url);
+					header("Location: ".$hostname."/CatalogApi/catalog.php");
+ 				} else {
+ 					$errorMessage = 'Error! Failed to upload image.';
+ 				}
 			} else {
 				$id = $_GET['id'];
 				$url = $hostname."/CatalogApi/api/recipe/".$id;
@@ -100,9 +112,8 @@ if($result->data == 'fail'){
 		if(sizeof($result->data) > 0 ){
 			foreach($result->data as $data){
       			$row = get_object_vars($data);
-      			$row['image'] = 'empty';
       			$output .= "<tr><td>" . $row['id'] . "</td>";
-      			$output .= 		"<td>". $row['image']."</td>";
+      			$output .= 		"<td><img src='./images/". $row['image']."' /></td>";
       			$output .= 		"<td>". $row['name']."</td>";
       			$output .= 		"<td>".$row['recipe']."</td>";
       			$output .= "<td><a href='./edit/" . $row['id'] . "'>Edit</a> / <a href='./delete/" . $row['id'] . "'>Delete</a></td></tr>";
@@ -165,8 +176,9 @@ if($result->data == 'fail'){
     	<div class="row">
     	    <div class="col-md-3 col-sm-3"></div>
         	<div class="col-md-6 col-sm-6">
-            	<form action="" method="post">
+            	<form action="" method="post" enctype="multipart/form-data">
                 	<div class="form-row">
+                		<span style="color:red; font-weight: bold;"><?php echo $errorMessage ?></span>
                     	<div class="col">
                         	<input name="name" type="text" class="form-control" placeholder="Name" value="<?php echo $name; ?>">
                     	</div>
@@ -174,7 +186,7 @@ if($result->data == 'fail'){
                         	<textarea name="recipe" class="form-control" placeholder="Recipe" cols="30" rows="4"><?php echo $recipe; ?></textarea>
                     	</div>
                     	<div class="col">
-                    		<input type="file" name="image" id="image" type="text" class="form-control">
+                    		<input type="file" name="image" id="image" class="form-control">
                     	</div>
                     	<div class="col">
                         	<button name="<?php echo $pButton?>" type="submit" class="btn btn-lg btn-primary btn-block"><?php echo $pButton?></button>

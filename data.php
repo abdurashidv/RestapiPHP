@@ -12,7 +12,7 @@ function getList($userid)
 {
 	connect();
 
-	$query = "SELECT id, name, recipe FROM catalogs WHERE userid = '$userid' ";
+	$query = "SELECT id, name, recipe, image FROM catalogs WHERE userid = '$userid' ";
 	$result = pg_fetch_all(pg_query($query));
 
 	if ($result != 'FALSE') {
@@ -50,11 +50,11 @@ function editRecipe($name, $recipe, $catalogID)
 	return false;
 }
 
-function createRecipe($name, $recipe, $userID)
+function createRecipe($name, $recipe, $image, $userID)
 {
 	connect();
 
-	$query = "INSERT INTO catalogs(name, recipe, userid) VALUES ('$name','$recipe','$userID')";
+	$query = "INSERT INTO catalogs(name, recipe, image, userid) VALUES ('$name','$recipe', '$image','$userID')";
 	$result = pg_query($query);
 
 	if ($result != 'FALSE') {

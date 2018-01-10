@@ -11,5 +11,6 @@ CREATE TABLE catalogs(
    id SERIAL PRIMARY KEY,
    name VARCHAR NOT NULL,
    recipe VARCHAR NOT NULL,
+   image VARCHAR NOT NULL,
    userid int NOT NULL
 );

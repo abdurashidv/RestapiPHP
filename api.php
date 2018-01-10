@@ -27,8 +27,9 @@ if(!empty($_GET['process']))
 		$name = $_GET['name'];
 		$recipe = $_GET['recipe'];
 		$userID = $_GET['uid'];
+		$image = $_GET['image'];
 
-		$result = createRecipe($name, $recipe, $userID);
+		$result = createRecipe($name, $recipe, $image, $userID);
 	} else if($process == 'delete'){
 		$id = $_GET['id'];
 
