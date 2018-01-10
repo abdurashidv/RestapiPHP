@@ -1,6 +1,7 @@
 <?php
+session_start();
 
-function rashid($url){
+function processData($url){
 	$client = curl_init($url);
    	curl_setopt($client,CURLOPT_RETURNTRANSFER,true);
    	$response = curl_exec($client);
@@ -8,10 +9,33 @@ function rashid($url){
    	return json_decode($response);
 }
 
+//variable initialization
+$output = "";
+$name = "";
+$recipe = "";
 $pButton = "";
+$row="";
+
+//default veriables
+$hostname = "http://$_SERVER[HTTP_HOST]";
 $catalogStyle = "style='display:block;'";
 $processStyle = "style='display:none;'";
 
+//USER CHECK
+// If user is logged in continue on this page else send to login page
+$login = $_SESSION['user']['login'];
+$password = $_SESSION['user']['password'];
+
+$url = $hostname."/CatalogApi/api/login/".$login."/".$password;
+$result = processData($url);
+
+$data = get_object_vars($result->data[0]);
+$uid = $data['id'];
+
+if($result->data == 'fail'){
+	header("Location: ".$hostname."/CatalogApi/index.php");
+}
+//END OF USER CHECK
 
 	if(isset($_GET['process'])){
 		if($_GET['process'] == 'create'){
@@ -23,17 +47,14 @@ $processStyle = "style='display:none;'";
 			//query
 			
 			if(isset($_POST['CREATE'])){
-				echo 'Rashid';
-				$url = "http://localhost/Restful/api/create";
+				$name = str_replace(" ","+",$_POST['name']);
+				$recipe = str_replace(" ","+",$_POST['recipe']);
+				$uid = 1;
 
-				$client = curl_init($url);
-				curl_setopt($client, CURLOPT_RETURNTRANSFER, true);
-				$response = curl_exec($client);
+				$url = $hostname."/CatalogApi/api/create/".$name."/".$recipe."/".$uid;
+				$result = processData($url);
 
-				$result =  json_decode($response);
-
-				print_r($result);
-				echo $result;
+				header("Location: ".$hostname."/CatalogApi/catalog.php");
 			}
 
 		} else if($_GET['process'] == 'edit') {
@@ -44,24 +65,58 @@ $processStyle = "style='display:none;'";
 			$pShow = "style='display:block;'";
 
 			//query
-			$url = "http://localhost/Restful/api/edit";
-		} else if($_GET['process'] == 'delete') {
-			//styles
-			$pShow = "style='display:block;'";
+			if(isset($_POST['UPDATE'])){
+				$name = str_replace(" ","+",$_POST['name']);
+				$recipe = str_replace(" ","+",$_POST['recipe']);
+				$id = $_GET['id'];
 
-			//query
-			$url = "http://localhost/Restful/api/delete";
+				$url = $hostname."/CatalogApi/api/edit/".$name."/".$recipe."/".$id;
+				$result = processData($url);
+
+				echo $name;
+				echo "<br>";
+				echo $recipe;
+
+				header("Location: ".$hostname."/CatalogApi/catalog.php");
+			} else {
+				$id = $_GET['id'];
+				$url = $hostname."/CatalogApi/api/recipe/".$id;
+				$result = processData($url);
+				$row = get_object_vars($result->data[0]);
+
+				$name = $row['name'];
+				$recipe = $row['recipe'];
+			}
+		} else if($_GET['process'] == 'delete') {
+			$id = $_GET['id'];
+			$url = "http://localhost/CatalogApi/api/delete/" . $id;
+			$result = processData($url);
+			header("Location: ".$hostname."/CatalogApi/catalog.php");
 		}
 	} else {
-		$url = "http://localhost/Restful/api/list";
+		$url = $hostname."/CatalogApi/api/list/".$uid;
+		$result = processData($url);
+
+		if(sizeof($result->data) > 0 ){
+			foreach($result->data as $data){
+      			$row = get_object_vars($data);
+      			$output .= "<tr><td>" . $row['id'] . "</td>";
+      			$output .= 		"<td>". $row['name']."</td>";
+      			$output .= 		"<td>".$row['recipe']."</td>";
+      			$output .= "<td><a href='./edit/" . $row['id'] . "'>Edit</a> / <a href='./delete/" . $row['id'] . "'>Delete</a></td></tr>";
+    		}
+		} else {
+			$output .= "<tr><td>No Data</td><td>No Data</td><td>No Data</td><td></td></tr";
+		}
+		
 	}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Catalog</title>
-	<link href="./styles/bootstrap.min.css" rel="stylesheet">
-	<link href="./styles/main.css" rel="stylesheet">
+	<link href="http://localhost/CatalogApi/styles/bootstrap.min.css" rel="stylesheet">
+	<link href="http://localhost/CatalogApi/styles/main.css" rel="stylesheet">
 </head>
 <body>
 <div class="contianer content">
@@ -89,12 +144,7 @@ $processStyle = "style='display:none;'";
         				</tr>
     				</thead>
 					<tbody>
-						<tr>
-							<td>1</td>
-							<td>Qurutob</td>
-							<td>Chaka, Ob, Kabuti</td>
-							<td><a href="./edit">Edit</a> / <a href="./delete">Delete</a></td>
-						</tr>
+						<?php echo $output; ?>
 					</tbody>
 				</table>
 			</div>
@@ -115,10 +165,10 @@ $processStyle = "style='display:none;'";
             	<form action="" method="post">
                 	<div class="form-row">
                     	<div class="col">
-                        	<input name="name" type="text" class="form-control" placeholder="Name">
+                        	<input name="name" type="text" class="form-control" placeholder="Name" value="<?php echo $name; ?>">
                     	</div>
                     	<div class="col">
-                        	<textarea name="recipe" class="form-control" placeholder="Recipe" cols="30" rows="4"></textarea>
+                        	<textarea name="recipe" class="form-control" placeholder="Recipe" cols="30" rows="4"><?php echo $recipe; ?></textarea>
                     	</div>
                     	<div class="col">
                         	<button name="<?php echo $pButton?>" type="submit" class="btn btn-lg btn-primary btn-block"><?php echo $pButton?></button>

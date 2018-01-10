@@ -1,12 +1,16 @@
 <?php
 
-function getList($userid)
-{
+function connect(){
 	try {
 		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
 	}catch (Exception $e) {
 		die("Error in connection: " . pg_last_error());
 	}
+}
+
+function getList($userid)
+{
+	connect();
 
 	$query = "SELECT id, name, recipe FROM catalogs WHERE userid = '$userid' ";
 	$result = pg_fetch_all(pg_query($query));
@@ -20,11 +24,7 @@ function getList($userid)
 
 function getRecipe($id)
 {
-	try {
-		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
-	}catch (Exception $e) {
-		die("Error in connection: " . pg_last_error());
-	}
+	connect();
 
 	$query = "SELECT id, name, recipe FROM catalogs WHERE id = '$id' ";
 	$result = pg_fetch_all(pg_query($query));
@@ -38,11 +38,7 @@ function getRecipe($id)
 
 function editRecipe($name, $recipe, $catalogID)
 {
-	try {
-		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
-	}catch (Exception $e) {
-		die("Error in connection: " . pg_last_error());
-	}
+	connect();
 
 	$query = "UPDATE catalogs SET name = '$name', recipe = '$recipe' WHERE id = '$catalogID'";
 	$result = pg_query($query);
@@ -56,11 +52,7 @@ function editRecipe($name, $recipe, $catalogID)
 
 function createRecipe($name, $recipe, $userID)
 {
-	try {
-		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
-	}catch (Exception $e) {
-		die("Error in connection: " . pg_last_error());
-	}
+	connect();
 
 	$query = "INSERT INTO catalogs(name, recipe, userid) VALUES ('$name','$recipe','$userID')";
 	$result = pg_query($query);
@@ -74,11 +66,7 @@ function createRecipe($name, $recipe, $userID)
 
 function deleteRecipe($id)
 {
-	try {
-		pg_connect("host=localhost port=5432 dbname=postgres user=postgres password=rashid");
-	}catch (Exception $e) {
-		die("Error in connection: " . pg_last_error());
-	}
+	connect();
 
 	$query = "DELETE FROM catalogs WHERE id = $id";
 	$result = pg_query($query);
@@ -88,6 +76,34 @@ function deleteRecipe($id)
 	}
 
 	return false;
+}
+
+function checkUser($login, $password)
+{
+	connect();
+
+	$query = "SELECT id FROM users WHERE login = '$login' AND password = '$password'";
+	$result = pg_fetch_all(pg_query($query));
+
+	if ($result != 'FALSE') {
+		return $result;
+	}
+
+	return 'fail';
+}
+
+function createUser($firstname, $lastname, $login, $password)
+{
+	connect();
+
+	$query = "INSERT INTO users(firstname, lastname, login, password) VALUES('$firstname','$lastname','$login','$password')";
+	$result = pg_query($query);
+
+	if ($result != 'FALSE') {
+		return 'success';
+	}
+
+	return 'fail';
 }
 
 ?>

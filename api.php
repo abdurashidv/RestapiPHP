@@ -24,16 +24,27 @@ if(!empty($_GET['process']))
 
 		$result = getRecipe($id);
 	} else if($process == 'create'){
-		$name = 'Shurbo';
-		$recipe = 'devonahsay';
-		$userID = 1;
+		$name = $_GET['name'];
+		$recipe = $_GET['recipe'];
+		$userID = $_GET['uid'];
 
 		$result = createRecipe($name, $recipe, $userID);
-		// $result = 'Success';
 	} else if($process == 'delete'){
 		$id = $_GET['id'];
 
 		$result = deleteRecipe($id);
+	} else if($process == 'login'){
+		$login = $_GET['login'];
+		$password = $_GET['password'];
+
+		$result = checkUser($login, $password);
+	} else if($process == 'signup'){
+		$firstname = $_GET['firstname'];
+		$lastname = $_GET['lastname'];
+		$login = $_GET['login'];
+		$password = $_GET['password'];
+
+		$result = createUser($firstname, $lastname, $login, $password);
 	}
 	
 	if(empty($result))
