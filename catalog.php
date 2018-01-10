@@ -15,7 +15,7 @@ $name = "";
 $recipe = "";
 $pButton = "";
 $row="";
-$errorMessage="";
+$errorMessage = "";
 
 //default veriables
 $hostname = "http://$_SERVER[HTTP_HOST]";
@@ -76,20 +76,11 @@ if($result->data == 'fail'){
 				$name = str_replace(" ","+",$_POST['name']);
 				$recipe = str_replace(" ","+",$_POST['recipe']);
 				$id = $_GET['id'];
-				$image = $_FILES['image']['name'];
 
-				$target = "images/" . basename($image);
+				$url = $hostname."/CatalogApi/api/edit/".$name."/".$recipe."/".$id;
+				$result = processData($url);
 
-				$processable = strlen($image)>0 ? move_uploaded_file($_FILES['image']['tmp_name'], $target) : TRUE;
-
- 				if($processable == TRUE)
- 				{
- 					$url = $hostname."/CatalogApi/api/edit/".$name."/".$recipe."/".$id;
-					$result = processData($url);
-					header("Location: ".$hostname."/CatalogApi/catalog.php");
- 				} else {
- 					$errorMessage = 'Error! Failed to upload image.';
- 				}
+				header("Location: ".$hostname."/CatalogApi/catalog.php");
 			} else {
 				$id = $_GET['id'];
 				$url = $hostname."/CatalogApi/api/recipe/".$id;
