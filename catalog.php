@@ -100,7 +100,9 @@ if($result->data == 'fail'){
 		if(sizeof($result->data) > 0 ){
 			foreach($result->data as $data){
       			$row = get_object_vars($data);
+      			$row['image'] = 'empty';
       			$output .= "<tr><td>" . $row['id'] . "</td>";
+      			$output .= 		"<td>". $row['image']."</td>";
       			$output .= 		"<td>". $row['name']."</td>";
       			$output .= 		"<td>".$row['recipe']."</td>";
       			$output .= "<td><a href='./edit/" . $row['id'] . "'>Edit</a> / <a href='./delete/" . $row['id'] . "'>Delete</a></td></tr>";
@@ -138,6 +140,7 @@ if($result->data == 'fail'){
     				<thead>
         				<tr>
             				<th>Row</th>
+            				<th>Image</th>
             				<th>Name</th>
             				<th>Recipe</th>
             				<th></th>
@@ -169,6 +172,9 @@ if($result->data == 'fail'){
                     	</div>
                     	<div class="col">
                         	<textarea name="recipe" class="form-control" placeholder="Recipe" cols="30" rows="4"><?php echo $recipe; ?></textarea>
+                    	</div>
+                    	<div class="col">
+                    		<input type="file" name="image" id="image" type="text" class="form-control">
                     	</div>
                     	<div class="col">
                         	<button name="<?php echo $pButton?>" type="submit" class="btn btn-lg btn-primary btn-block"><?php echo $pButton?></button>
