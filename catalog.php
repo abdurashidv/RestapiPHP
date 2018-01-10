@@ -38,14 +38,14 @@ if($result->data == 'fail'){
 //END OF USER CHECK
 
 	if(isset($_GET['process'])){
-		if($_GET['process'] == 'create'){
+		if($_GET['process'] == 'create'){ //Create Recipe
+			
 			//styles
 			$pButton = 'CREATE';
 			$catalogStyle = "style='display:none;'";
 			$processStyle = "style='display:block;'";
 
-			//query
-			
+			//query			
 			if(isset($_POST['CREATE'])){
 				$name = str_replace(" ","+",$_POST['name']);
 				$recipe = str_replace(" ","+",$_POST['recipe']);
@@ -57,7 +57,7 @@ if($result->data == 'fail'){
 				header("Location: ".$hostname."/CatalogApi/catalog.php");
 			}
 
-		} else if($_GET['process'] == 'edit') {
+		} else if($_GET['process'] == 'edit') { //Edit Recipe
 			//styles
 			$pButton = 'UPDATE';
 			$catalogStyle = "style='display:none;'";
